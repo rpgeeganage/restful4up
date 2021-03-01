@@ -51,5 +51,3 @@ with open('/home/o4isec/projects/test.exe', 'wb') as f:
 # clean
 app.clean()
 ```
-
-### [Comments, suggestions, features are welcome.]
