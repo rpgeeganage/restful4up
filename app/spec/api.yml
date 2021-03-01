@@ -1,0 +1,73 @@
+openapi: 3.0.0
+info:
+  title: RESTful4Up
+  description: RESTful API 4 Unipacker
+  version: 1.0.0
+
+servers:
+- url: /v1
+
+paths:
+  /unpack:
+    post:
+      description: try to unpack the given file
+      operationId: unpack
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              required:
+              - file
+              properties:
+                file:
+                  type: string
+                  description: file
+                  format: binary
+        required: true
+
+      responses:
+        200:
+          description: Ok
+          content:
+            '*/*':
+              schema:
+                type: string
+                format: binary
+        400:
+          description: request error
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/error'
+        500:
+          description: server error
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/error'
+  /clean:
+    head:
+      description: clean up the uploaded files
+      operationId: clean
+      responses:
+        204:
+          description: Ok
+        500:
+          description: server error
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/error'
+components:
+  schemas:
+    error:
+      required:
+      - status
+      - message
+      type: object
+      properties:
+        status:
+          type: integer
+        message:
+          type: string
+
