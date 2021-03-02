@@ -58,9 +58,7 @@ async function readUnpackedFile(
       unipackerOutputFile
     );
 
-    const readableStream = fs.createReadStream(unipackerOutputFile);
-
-    return readableStream;
+    return fs.createReadStream(unipackerOutputFile);
   } catch {
     throw new ProcessError(stdOut);
   }
