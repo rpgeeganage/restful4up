@@ -1,10 +1,13 @@
 # RESTful API for [Unipacker](https://github.com/unipacker/unipacker)
 
+## Software Requirements
+* Docker
+
 # How to use
 1. Clone this repo
 
 ```sh
-git clone https://github.com/o4isec/restful4up.git
+git clone https://github.com/rpgeeganage/restful4up.git
 ```
 2. use the `Makefile` to execute the `build`
 
@@ -40,12 +43,12 @@ from restful4up import restful4up
 
 app = restful4up('http://localhost:7887')
 
-path = '/home/o4isec/projects/unipacker/Sample/UPX/Lab18-01.exe'
+path = '/home/user/projects/unipacker/Sample/UPX/Lab18-01.exe'
 
 # unpack api
 response = app.unpack(path)
 
-with open('/home/o4isec/projects/test.exe', 'wb') as f:
+with open('/home/user/projects/test.exe', 'wb') as f:
     f.write(response)
 
 # clean
