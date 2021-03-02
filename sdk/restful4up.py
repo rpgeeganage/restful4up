@@ -15,10 +15,10 @@ class restful4up():
 			raise ValueError('Please provide the API HOST')
 
 	def unpack(self, path):
-		return self.getFile(path, 'unpack')
+		return self.uploadAndGetOutput(path, 'unpack')
 
 	def emulationOutput(self, path):
-		return self.getFile(path, 'emulation-output')
+		return self.uploadAndGetOutput(path, 'emulation-output')
 
 	def clean(self):
 		try:
@@ -31,7 +31,7 @@ class restful4up():
 		except requests.exceptions.RequestException as err:
 			raise ValueError(err)
 
-	def getFile(self, path, endpoint):
+	def uploadAndGetOutput(self, path, endpoint):
 		if isdir(path):
 			raise ValueError('The path specified appears to be a directory and not a file.')
 		elif not isfile(path):
