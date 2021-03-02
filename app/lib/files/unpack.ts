@@ -45,10 +45,10 @@ export async function getEmulationOutput(
   }
 }
 
-async function readUnpackedFile(
+function readUnpackedFile(
   params: ISavedFile,
   stdOut: string
-): Promise<Readable> {
+): Readable {
   const { folder, file } = params;
   try {
     const unipackerOutputFile = path.join(folder, `unpacked_${file}`);
