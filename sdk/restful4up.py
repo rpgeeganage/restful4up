@@ -15,6 +15,23 @@ class restful4up():
 			raise ValueError('Please provide the API HOST')
 
 	def unpack(self, path):
+		return self.getFile(path, 'unpack')
+
+	def emulationOutput(self, path):
+		return self.getFile(path, 'emulation-output')
+
+	def clean(self):
+		try:
+			response = requests.head(f'{self.API_HOST}/clean')
+			response.raise_for_status()
+		except requests.exceptions.HTTPError as err:
+			raise ValueError(err.response.message)
+		except requests.exceptions.Timeout:
+			raise ValueError('timed out')
+		except requests.exceptions.RequestException as err:
+			raise ValueError(err)
+
+	def getFile(self, path, endpoint):
 		if isdir(path):
 			raise ValueError('The path specified appears to be a directory and not a file.')
 		elif not isfile(path):
@@ -34,7 +51,7 @@ class restful4up():
 		logging.info('Uploading %s (%s bytes) to API' % (path, file_size))
 
 		try:
-			response = requests.post(f'{self.API_HOST}/unpack', files=files)
+			response = requests.post(f'{self.API_HOST}/{endpoint}', files=files)
 			response.raise_for_status()
 		except requests.exceptions.HTTPError as err:
 			raise ValueError(err.response.message)
@@ -44,14 +61,3 @@ class restful4up():
 			raise ValueError(err)
 
 		return response.content
-
-	def clean(self):
-		try:
-			response = requests.head(f'{self.API_HOST}/clean')
-			response.raise_for_status()
-		except requests.exceptions.HTTPError as err:
-			raise ValueError(err.response.message)
-		except requests.exceptions.Timeout:
-			raise ValueError('timed out')
-		except requests.exceptions.RequestException as err:
-			raise ValueError(err)
