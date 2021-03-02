@@ -6,4 +6,4 @@ build:
 	@docker build -t $(DOCKER_IMAGE_NAME) .
 
 run:
-	@docker run -e HTTP_PORT=$(HTTP_PORT) -e DEBUG=* -p $(HTTP_PORT):$(HTTP_PORT) --rm $(DOCKER_IMAGE_NAME)
+	@docker run -e HTTP_PORT=$(HTTP_PORT) -p $(HTTP_PORT):$(HTTP_PORT) --rm $(DOCKER_IMAGE_NAME)
