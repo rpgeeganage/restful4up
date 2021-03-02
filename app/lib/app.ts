@@ -16,10 +16,11 @@ export async function getApp(
 ): Promise<express.Application> {
   const app = express();
 
+  app.use(cors());
+
   app.use(bodyParser.json());
   app.use(bodyParser.text());
   app.use(bodyParser.urlencoded({ extended: false }));
-  app.use(cors());
 
   app.use('/spec', express.static(specFilePath));
 
@@ -42,6 +43,8 @@ export async function getApp(
               return controllers.clean;
             case `${specArgs.basePath}/unpack`:
               return controllers.unpack;
+            case `${specArgs.basePath}/emulation-output`:
+              return controllers.emulationOutput;
             default:
               throw new Error(`incorrect path ${specArgs.openApiRoute}`);
           }
