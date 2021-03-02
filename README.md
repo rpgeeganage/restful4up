@@ -31,7 +31,7 @@ Upload the file to unpack and get the unpacked file
 
 * `/v1/emulation-output`
 
-Upload the file to unpack and get output from the Unipacker
+Upload the file to unpack and get the emulation output of the Unipacker
 
 * `/v1/clean`
 
@@ -45,9 +45,9 @@ Cleanup the uploaded executables
 
 from restful4up import restful4up
 
-app = restful4up('http://localhost:7887')
-
 path = '/home/user/projects/unipacker/Sample/UPX/Lab18-01.exe'
+
+app = restful4up('http://localhost:7887')
 
 # Unpack file
 unpackedFileStream = app.unpack(path)
@@ -55,11 +55,10 @@ unpackedFileStream = app.unpack(path)
 with open('/home/user/projects/test.exe', 'wb') as f:
     f.write(unpackedFileStream)
 
-
 # Get emulation output
 emulationOutput = app.emulationOutput(path)
-print(emulationOutput)
 
+print(emulationOutput)
 
 # Clean
 app.clean()

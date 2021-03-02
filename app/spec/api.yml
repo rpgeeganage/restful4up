@@ -48,7 +48,7 @@ paths:
 
   /emulation-output:
     post:
-      description: try to get emulation output after unpacking the file
+      description: try to get the emulation output after unpacking the file
       operationId: emulationOutput
       requestBody:
         content:
