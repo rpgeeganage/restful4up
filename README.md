@@ -58,6 +58,7 @@ with open('/home/user/projects/test.exe', 'wb') as f:
 
 # Get emulation output
 emulationOutput = app.emulationOutput(path)
+print(emulationOutput)
 
 
 # Clean
