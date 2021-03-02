@@ -1,28 +1,27 @@
-import * as fs from 'fs';
-import * as path from 'path';
-import { exec } from 'child_process';
 import { Readable } from 'stream';
+import * as path from 'path';
+import * as fs from 'fs';
 
 import debug from 'debug';
 
 import { ProcessError } from '../errors';
 
-import { getWorkSpace } from './common';
+import { saveIncommingFile, runUnipacker, ISavedFile } from './common';
 
-interface ISavedFile {
-  file: string;
-  folder: string;
-}
-
-const debugUnipacker = debug('unipacker');
+const debugUnipacker = debug('unipacker-unpack');
 
 export async function getUnpackedFile(
   incommingFile: Buffer
 ): Promise<Readable> {
   try {
     const savedFileInfo = await saveIncommingFile(incommingFile);
+    debugUnipacker('getUnpackedFile: saved file info %o', savedFileInfo);
 
-    const readableStream = await getUnipackedFile(savedFileInfo);
+    const stdOut = await runUnipacker(savedFileInfo);
+    debugUnipacker('getUnpackedFile: executed unipacker');
+
+    const readableStream = readUnpackedFile(savedFileInfo, stdOut);
+    debugUnipacker('getUnpackedFile: readable stream success');
 
     return readableStream;
   } catch (error) {
@@ -30,76 +29,39 @@ export async function getUnpackedFile(
   }
 }
 
-function saveIncommingFile(incommingFile: Buffer): Promise<ISavedFile> {
-  const workSpace = getWorkSpace();
+export async function getEmulationOutput(
+  incommingFile: Buffer
+): Promise<string[]> {
+  try {
+    const savedFileInfo = await saveIncommingFile(incommingFile);
+    debugUnipacker('getEmulationOutput: saved file info %o', savedFileInfo);
 
-  return new Promise((resolve, reject) => {
-    if (!fs.existsSync(workSpace)) {
-      fs.mkdirSync(workSpace);
-    }
+    const stdOut = await runUnipacker(savedFileInfo);
+    debugUnipacker('getEmulationOutput: executed unipacker');
 
-    fs.mkdtemp(
-      path.join(workSpace, 'app_'),
-      (error: Error | null, folder: string) => {
-        if (error) {
-          return reject(error);
-        }
-
-        const file = `${Date.now()}.invactive`;
-        const savedPath = path.join(folder, file);
-
-        debugUnipacker('saved path %s', savedPath);
-
-        fs.writeFileSync(savedPath, incommingFile);
-
-        resolve({
-          file,
-          folder
-        });
-      }
-    );
-  });
+    return stdOut.split('\n').filter((s: string) => s && s.trim());
+  } catch (error) {
+    throw new ProcessError(error.message);
+  }
 }
 
-function getUnipackedFile(params: ISavedFile): Promise<Readable> {
+async function readUnpackedFile(
+  params: ISavedFile,
+  stdOut: string
+): Promise<Readable> {
   const { folder, file } = params;
+  try {
+    const unipackerOutputFile = path.join(folder, `unpacked_${file}`);
 
-  return new Promise((resolve, reject) => {
-    const unipackerCommand = `unipacker ${path.join(
-      folder,
-      file
-    )} -d ${folder}`;
-
-    debugUnipacker('unipack command [%s]', unipackerCommand);
-
-    exec(
-      unipackerCommand,
-      (error: Error | null, stdOut: string, stdErr: string) => {
-        if (error) {
-          debugUnipacker('Error occured %o', error);
-
-          return reject(error);
-        }
-        if (stdErr) {
-          debugUnipacker('Std Error occured %s', error);
-
-          return reject(new Error(stdErr));
-        }
-
-        debugUnipacker('Std op occured %s', stdOut);
-
-        try {
-          const unipackerOutputFile = path.join(folder, `unpacked_${file}`);
-
-          debugUnipacker('Unipacker output file %s', unipackerOutputFile);
-
-          const readableStream = fs.createReadStream(unipackerOutputFile);
-
-          return resolve(readableStream);
-        } catch {
-          return reject(new Error(stdOut));
-        }
-      }
+    debugUnipacker(
+      'readUnpackedFile: Unipacker output file %s',
+      unipackerOutputFile
     );
-  });
+
+    const readableStream = fs.createReadStream(unipackerOutputFile);
+
+    return readableStream;
+  } catch {
+    throw new ProcessError(stdOut);
+  }
 }
