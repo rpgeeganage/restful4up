@@ -6,10 +6,6 @@ ARG HTTP_PORT
 # Working directory
 ARG WORK_DIR=/opt/restful4up
 
-# Flare floss
-ARG FLARE_FLOSS_VERSION=floss-v1.7.0-linux
-ARG FLARE_FLOSS_ZIP=$FLARE_FLOSS_VERSION.zip
-
 # App folder path
 ARG APP_FOLDER_PATH_ZIP=$WORK_DIR/zips
 ARG APP_FOLDER_PATH_EXEC=$WORK_DIR/executables
@@ -39,12 +35,6 @@ RUN apt-get -y install yarn
 
 # Unipacker
 RUN pip3 install --upgrade unipacker
-
-# Flare Floss
-RUN mkdir -p ${APP_FOLDER_PATH_EXEC}
-RUN mkdir -p ${APP_FOLDER_PATH_ZIP}
-RUN cd ${APP_FOLDER_PATH_ZIP} && wget https://github.com/fireeye/flare-floss/releases/download/v1.7.0/${FLARE_FLOSS_ZIP}
-RUN unzip ${APP_FOLDER_PATH_ZIP}/${FLARE_FLOSS_ZIP} -d ${APP_FOLDER_PATH_EXEC}
 
 # Set environment variables
 ENV PATH="$HOME/.local/bin:$HOME/${APP_FOLDER_PATH_EXEC}:$PATH"
