@@ -5,7 +5,7 @@ import { exec } from 'child_process';
 
 import debug from 'debug';
 
-const debugUnipacker = debug('unipacker-common');
+const debugCommon = debug('common');
 export interface ISavedFile {
   file: string;
   folder: string;
@@ -33,7 +33,7 @@ export function saveIncommingFile(incommingFile: Buffer): Promise<ISavedFile> {
         const file = `${Date.now()}.invactive`;
         const savedPath = path.join(folder, file);
 
-        debugUnipacker('saveIncommingFile: saved path %s', savedPath);
+        debugCommon('saveIncommingFile: saved path %s', savedPath);
 
         fs.writeFileSync(savedPath, incommingFile);
 
@@ -50,30 +50,105 @@ export function runUnipacker(params: ISavedFile): Promise<string> {
   const { folder, file } = params;
 
   return new Promise((resolve, reject) => {
-    const unipackerCommand = `unipacker ${path.join(
+    const flareFlossCommand = `unipacker ${path.join(
       folder,
       file
     )} -d ${folder}`;
 
-    debugUnipacker('runUnipackedFile: unipack command [%s]', unipackerCommand);
+    debugCommon('runUnipackedFile: unipack command [%s]', flareFlossCommand);
 
     exec(
-      unipackerCommand,
+      flareFlossCommand,
       (error: Error | null, stdOut: string, stdErr: string) => {
         if (error) {
-          debugUnipacker('runUnipackedFile: Error occured %o', error);
+          debugCommon('runUnipackedFile: Error occured %o', error);
 
           return reject(error);
         }
+
         if (stdErr) {
-          debugUnipacker('runUnipackedFile: Std Error occured %s', error);
+          debugCommon('runUnipackedFile: Std Error occured %s', error);
 
           return reject(new Error(stdErr));
         }
 
-        debugUnipacker('runUnipackedFile: Std op occured %s', stdOut);
+        debugCommon('runUnipackedFile: Std op occured %s', stdOut);
 
         return resolve(stdOut);
+      }
+    );
+  });
+}
+
+export function runStrings(
+  params: ISavedFile,
+  mininumLengthOfString: number
+): Promise<string[]> {
+  const { folder, file } = params;
+
+  return new Promise((resolve, reject) => {
+    const inputFilePath = path.join(folder, file);
+
+    const flareFlossCommand = `strings -n ${mininumLengthOfString} ${inputFilePath}`;
+
+    debugCommon('runStrings: strings command [%s]', flareFlossCommand);
+
+    exec(
+      flareFlossCommand,
+      (error: Error | null, stdOut: string, stdErr: string) => {
+        if (error) {
+          debugCommon('runStrings: Error occured %o', error);
+
+          return reject(error);
+        }
+
+        if (stdErr) {
+          debugCommon('runStrings: Std Error occured %s', error);
+
+          return reject(new Error(stdErr));
+        }
+
+        debugCommon('runStrings: Std op occured %s', stdOut);
+
+        return resolve(stdOut.split(/\n/));
+      }
+    );
+  });
+}
+
+export function calculateSingleHash(
+  hashCommand: string,
+  params: ISavedFile
+): Promise<string> {
+  const { folder, file } = params;
+
+  return new Promise((resolve, reject) => {
+    const inputFilePath = path.join(folder, file);
+
+    const singleHashComand = `${hashCommand} ${inputFilePath}`;
+
+    debugCommon('calculateSingleHash: hash command [%s]', singleHashComand);
+
+    exec(
+      singleHashComand,
+      (error: Error | null, stdOut: string, stdErr: string) => {
+        if (error) {
+          debugCommon('calculateSingleHash: Error occured %o', error);
+
+          return reject(error);
+        }
+
+        if (stdErr) {
+          debugCommon('calculateSingleHash: Std Error occured %s', error);
+
+          return reject(new Error(stdErr));
+        }
+
+        debugCommon('calculateSingleHash: stdOut %s', stdOut);
+
+        const output = stdOut.split(/\s/)[0] as string;
+
+        return resolve(output);
       }
     );
   });
