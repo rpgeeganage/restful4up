@@ -120,7 +120,7 @@ paths:
                   format: binary
                 is_unpacking_required:
                   type: string
-                  enum: [true, false]
+                  enum: ['true', 'false']
                 minimum_string_length:
                   type: string
                 strings_to_ignore:
