@@ -120,9 +120,9 @@ paths:
                   description: file
                   format: binary
                 is_unpacking_required:
-                  type: boolean
+                  type: string
                 minimum_string_length:
-                  type: integer
+                  type: string
                   min: 1
                   default: 4
                 strings_to_ignore:
@@ -139,11 +139,8 @@ paths:
             '*/*':
               schema:
                 properties:
-                  rules:
-                    type: array 
-                    items:
-                      $ref: '#/components/schemas/yara'
-                    minItems: 1
+                  rule:
+                    $ref: '#/components/schemas/yara'
         400:
           description: request error
           content:
@@ -168,12 +165,27 @@ components:
         name:
           type: string
           description: Yara rule name
+
         meta:
-          type: string
-          description: Yara rule meta data section
+          type: array
+          description: Yara rule meta data section 
+          items:
+            type: array 
+            items:
+                type: string
+            minItems: 2
+            maxItems: 2
+
         strings:
-          type: string
-          description: Yara rule meta string section    
+          type: array
+          description: Yara rule string section 
+          items:
+            type: array 
+            items:
+                type: string
+            minItems: 2
+            maxItems: 2
+
     error:
       required:
       - status
