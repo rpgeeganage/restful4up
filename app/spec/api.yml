@@ -62,7 +62,6 @@ paths:
                   description: file
                   format: binary
         required: true
-
       responses:
         200:
           description: emulation output after unpacking the file
@@ -121,10 +120,9 @@ paths:
                   format: binary
                 is_unpacking_required:
                   type: string
+                  enum: [true, false]
                 minimum_string_length:
                   type: string
-                  min: 1
-                  default: 4
                 strings_to_ignore:
                   type: array 
                   items:
@@ -165,7 +163,6 @@ components:
         name:
           type: string
           description: Yara rule name
-
         meta:
           type: array
           description: Yara rule meta data section 
@@ -175,7 +172,6 @@ components:
                 type: string
             minItems: 2
             maxItems: 2
-
         strings:
           type: array
           description: Yara rule string section 
@@ -185,7 +181,6 @@ components:
                 type: string
             minItems: 2
             maxItems: 2
-
     error:
       required:
       - status
