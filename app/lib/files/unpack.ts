@@ -10,6 +10,13 @@ import { saveIncommingFile, runUnipacker, ISavedFile } from './common';
 
 const debugUnipacker = debug('unipacker-unpack');
 
+/**
+ * Execute Unipacker and read the unpacked file operation handler
+ *
+ * @export
+ * @param {Buffer} incommingFile
+ * @return {*}  {Promise<Readable>}
+ */
 export async function getUnpackedFile(
   incommingFile: Buffer
 ): Promise<Readable> {
@@ -29,6 +36,13 @@ export async function getUnpackedFile(
   }
 }
 
+/**
+ * Get emulation output from Unipacker operation handler
+ *
+ * @export
+ * @param {Buffer} incommingFile
+ * @return {*}  {Promise<string[]>}
+ */
 export async function getEmulationOutput(
   incommingFile: Buffer
 ): Promise<string[]> {
@@ -45,6 +59,13 @@ export async function getEmulationOutput(
   }
 }
 
+/**
+ * Read the unpacked file
+ *
+ * @param {ISavedFile} params
+ * @param {string} stdOut
+ * @return {*}  {Readable}
+ */
 function readUnpackedFile(params: ISavedFile, stdOut: string): Readable {
   const { folder, file } = params;
   try {

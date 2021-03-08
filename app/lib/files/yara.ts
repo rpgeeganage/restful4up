@@ -6,7 +6,7 @@ import { ProcessError } from '../errors';
 
 import {
   saveIncommingFile,
-  runStrings,
+  runStringExtraction,
   ISavedFile,
   calculateSingleHash
 } from './common';
@@ -17,34 +17,50 @@ const debugYara = debug('yara');
 
 const DEFAULT_MINIMUM_STRING_LENGTH = 4;
 
-export interface IGenerateYaraRules {
+/**
+ * Generate partial YARA rule request
+ *
+ * @export
+ * @interface IGeneratePartialYaraRules
+ */
+export interface IGeneratePartialYaraRules {
   file: Buffer;
   isUnpackingRequired: boolean;
   stringsToIgnore: string[];
   minimumStringLength: number;
 }
 
-export async function generateYaraRule(
-  request: IGenerateYaraRules
+/**
+ * Generate YARA rule operation handler
+ *
+ * @export
+ * @param {IGeneratePartialYaraRules} request
+ * @return {*}  {Promise<IYaraRule>}
+ */
+export async function generatePartialYaraRule(
+  request: IGeneratePartialYaraRules
 ): Promise<IYaraRule> {
   try {
     const incommingFile = await getInputBuffer(
       request.file,
       request.isUnpackingRequired
     );
-    debugYara('generateYaraRule: buffer recieved');
+    debugYara('generatePartialYaraRule: buffer recieved');
 
     const savedFileInfo = await saveIncommingFile(incommingFile);
-    debugYara('generateYaraRule: saved file info %j', savedFileInfo);
+    debugYara('generatePartialYaraRule: saved file info %j', savedFileInfo);
 
     const hashes = await calculateHashes(savedFileInfo);
-    debugYara('generateYaraRule: hashes %j', hashes);
+    debugYara('generatePartialYaraRule: hashes %j', hashes);
 
-    const extractedStrings = await runStrings(
+    const extractedStrings = await runStringExtraction(
       savedFileInfo,
       request.minimumStringLength ?? DEFAULT_MINIMUM_STRING_LENGTH
     );
-    debugYara('generateYaraRule: extracted strings %j', extractedStrings);
+    debugYara(
+      'generatePartialYaraRule: extracted strings %j',
+      extractedStrings
+    );
 
     const ruleName = 'extracted_string';
     const rule = generateRule(
@@ -53,7 +69,7 @@ export async function generateYaraRule(
       hashes,
       extractedStrings
     );
-    debugYara('generateYaraRule: built rules %j', rule);
+    debugYara('generatePartialYaraRule: built rules %j', rule);
 
     return rule;
   } catch (error) {
@@ -61,6 +77,13 @@ export async function generateYaraRule(
   }
 }
 
+/**
+ * Unpack and convert stream to buffer if required
+ *
+ * @param {Buffer} inputBuffer
+ * @param {boolean} [isUpackingRequired]
+ * @return {*}  {Promise<Buffer>}
+ */
 async function getInputBuffer(
   inputBuffer: Buffer,
   isUpackingRequired?: boolean
@@ -74,6 +97,12 @@ async function getInputBuffer(
   return inputBuffer;
 }
 
+/**
+ * Convert stream to buffer
+ *
+ * @param {Readable} inputStream
+ * @return {*}  {Promise<Buffer>}
+ */
 async function getBufferFromStream(inputStream: Readable): Promise<Buffer> {
   debugYara('getBufferFromStream: converting a stream to buffer');
 
@@ -91,6 +120,12 @@ async function getBufferFromStream(inputStream: Readable): Promise<Buffer> {
   return Buffer.concat(bufferChuncks);
 }
 
+/**
+ * Get hashes
+ *
+ * @param {ISavedFile} savedFile
+ * @return {*}  {Promise<IHashes>}
+ */
 async function calculateHashes(savedFile: ISavedFile): Promise<IHashes> {
   const [md5sum, sha256sum, sha512sum] = await Promise.all(
     ['md5sum', 'sha256sum', 'sha512sum'].map((h) =>

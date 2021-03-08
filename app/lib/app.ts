@@ -45,8 +45,8 @@ export async function getApp(
               return controllers.unpack;
             case `${specArgs.basePath}/emulation-output`:
               return controllers.emulationOutput;
-            case `${specArgs.basePath}/generate-yara-rules`:
-              return controllers.generateYaraRule;
+            case `${specArgs.basePath}/generate-partial-yara-rules`:
+              return controllers.generatePartialYaraRule;
             default:
               throw new Error(`incorrect path ${specArgs.openApiRoute}`);
           }

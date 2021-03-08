@@ -1,8 +1,17 @@
 import { Request, Response, NextFunction } from 'express';
 
-import { generateYaraRule as generateYaraRuleOperation } from '../files';
+import { generatePartialYaraRule as generatePartialYaraRuleOperation } from '../files';
 
-export async function generateYaraRule(
+/**
+ * Generate Yara partial Yara rules for given executable request handler
+ *
+ * @export
+ * @param {(Request & { files: { buffer: Buffer }[] })} req
+ * @param {Response} res
+ * @param {NextFunction} next
+ * @return {*}  {Promise<void>}
+ */
+export async function generatePartialYaraRule(
   req: Request & { files: { buffer: Buffer }[] },
   res: Response,
   next: NextFunction
@@ -15,7 +24,7 @@ export async function generateYaraRule(
       strings_to_ignore
     } = req.body;
 
-    const rule = await generateYaraRuleOperation({
+    const rule = await generatePartialYaraRuleOperation({
       file: file.buffer,
       isUnpackingRequired: !!is_unpacking_required,
       minimumStringLength: parseInt(minimum_string_length, 10),

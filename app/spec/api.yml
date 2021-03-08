@@ -102,9 +102,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/error'
 
-  /generate-yara-rules:
+  /generate-partial-yara-rules:
     post:
-      description: generate yara rules for give executable
+      description: generate partial YARA rules for give executable. (Rule without the condition section)
       operationId: generateYaraRule
       requestBody:
         required: true

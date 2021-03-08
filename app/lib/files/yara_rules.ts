@@ -10,11 +10,21 @@ export interface IYaraRule {
   strings: [string, string][];
 }
 
+/**
+ * Generate partial YARA Rule operation handler
+ *
+ * @export
+ * @param {string} name
+ * @param {string[]} stringsToIgnore
+ * @param {IHashes} hashes
+ * @param {[string, string][]} extractedString
+ * @return {*}  {IYaraRule}
+ */
 export function generateRule(
   name: string,
   stringsToIgnore: string[],
   hashes: IHashes,
-  extractedString: string[]
+  extractedString: [string, string][]
 ): IYaraRule {
   const hashString: [string, string][] = Object.keys(hashes).map((h) => [
     h,
@@ -23,10 +33,16 @@ export function generateRule(
 
   const strings: [string, string][] = extractedString
     .filter(
-      (es: string) =>
-        es && es.trim() && es.length && !stringsToIgnore.includes(es)
+      (es: [string, string]) =>
+        es[1] &&
+        es[1].trim() &&
+        es[1].length &&
+        !stringsToIgnore.includes(es[1])
     )
-    .map((es: string, i: number) => [`str_${i}`, es.trim()]);
+    .map((es: [string, string], i: number) => [
+      `${es[0]}_${i}`.toLowerCase(),
+      es[1].trim()
+    ]);
 
   return {
     name: `rule_for_${name}`,

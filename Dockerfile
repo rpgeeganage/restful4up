@@ -36,6 +36,9 @@ RUN apt-get -y install yarn
 # Unipacker
 RUN pip3 install --upgrade unipacker
 
+# PEV tools
+RUN apt-get -y install pev
+
 # Set environment variables
 ENV PATH="$HOME/.local/bin:$HOME/${APP_FOLDER_PATH_EXEC}:$PATH"
 ENV HTTP_PORT=$HTTP_PORT
@@ -45,6 +48,9 @@ ENV HTTP_PORT ${HTTP_PORT}
 
 # Copy source code
 COPY ./app .
+
+# Setting up proper environment
+ENV NODE_ENV=production
 
 RUN yarn install --forzen-lockfile
 RUN yarn build
