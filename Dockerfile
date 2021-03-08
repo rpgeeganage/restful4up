@@ -49,10 +49,11 @@ ENV HTTP_PORT ${HTTP_PORT}
 # Copy source code
 COPY ./app .
 
-# Setting up proper environment
-ENV NODE_ENV=production
 
 RUN yarn install --forzen-lockfile
 RUN yarn build
+
+# Setting up proper environment
+ENV NODE_ENV=production
 
 CMD [ "yarn", "start" ]
