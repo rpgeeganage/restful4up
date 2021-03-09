@@ -93,6 +93,7 @@ Request:
 
 # How to use the SDK
 ### Python SDK is available in `sdk/restful4up.py`
+### [Read Me](sdk/)
 ```python
 #!/usr/bin/python3
 
