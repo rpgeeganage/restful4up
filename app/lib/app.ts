@@ -19,7 +19,6 @@ export async function getApp(
   app.use(cors());
 
   app.use(bodyParser.json());
-  app.use(bodyParser.text());
   app.use(bodyParser.urlencoded({ extended: false }));
 
   app.use('/spec', express.static(specFilePath));
@@ -45,6 +44,8 @@ export async function getApp(
               return controllers.unpack;
             case `${specArgs.basePath}/emulation-output`:
               return controllers.emulationOutput;
+            case `${specArgs.basePath}/generate-partial-yara-rules`:
+              return controllers.generatePartialYaraRule;
             default:
               throw new Error(`incorrect path ${specArgs.openApiRoute}`);
           }
@@ -63,7 +64,10 @@ export async function getApp(
       debugApp('Error %o', err);
 
       res.status(err.status).json({
-        status: err.status,
+        status:
+          err instanceof openApiValidator.error.InternalServerError
+            ? 400
+            : err.status,
         message: err.message
       });
 

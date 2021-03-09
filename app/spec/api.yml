@@ -62,7 +62,6 @@ paths:
                   description: file
                   format: binary
         required: true
-
       responses:
         200:
           description: emulation output after unpacking the file
@@ -103,8 +102,97 @@ paths:
               schema:
                 $ref: '#/components/schemas/error'
 
+  /generate-partial-yara-rules:
+    post:
+      description: generate partial YARA rules for give executable. (Rule without the condition section)
+      operationId: generatePartialYaraRule
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              required:
+              - file
+              properties:
+                file:
+                  type: string
+                  description: file
+                  format: binary
+                is_unpacking_required:
+                  type: string
+                  enum: ['true', 'false']
+                minimum_string_length:
+                  type: string
+                strings_to_ignore:
+                  type: array 
+                  items:
+                    type: string
+                  minItems: 0
+                  maxItems: 1000
+
+      responses:
+        200:
+          description: Yara rules
+          content:
+            '*/*':
+              schema:
+                properties:
+                  rule:
+                    $ref: '#/components/schemas/yara'
+        400:
+          description: request error
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/error'
+        500:
+          description: server error
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/error'
+
 components:
   schemas:
+    yara:
+      required:
+      - name
+      - meta
+      - strings
+      properties:
+        name:
+          type: string
+          description: Yara rule name
+        meta:
+          type: object
+          description: Yara rule meta data section 
+          required:
+          - date
+          - md5sum
+          - sha256sum
+          - sha512sum
+          properties:
+            date:
+              type: string
+              description: Date of the YARA rule created
+            md5sum:
+              type: string
+              description: MD5 check sum
+            sha256sum:
+              type: string
+              description: SHA 256 check sum
+            sha512sum:
+              type: string
+              description: SHA 512 check sum
+        strings:
+          type: array
+          description: Yara rule string section 
+          items:
+            type: array 
+            items:
+                type: string
+            minItems: 2
+            maxItems: 2
     error:
       required:
       - status

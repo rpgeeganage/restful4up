@@ -8,6 +8,12 @@ import { getWorkSpace } from './common';
 
 const debugUnipacker = debug('clean');
 
+/**
+ * Clean workspace operation handler
+ *
+ * @export
+ * @return {*}  {Promise<void>}
+ */
 export async function cleanWorkspace(): Promise<void> {
   try {
     const workspakce = getWorkSpace();

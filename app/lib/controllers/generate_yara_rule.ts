@@ -1,12 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
 import debug from 'debug';
 
-import { getEmulationOutput } from '../files';
+import { generatePartialYaraRule as generatePartialYaraRuleOperation } from '../files';
 
 const debugUnipacker = debug('emulationOutput-Controller');
 
 /**
- * Extract Emulation output request handler
+ * Generate Yara partial Yara rules for given executable request handler
  *
  * @export
  * @param {(Request & { files: { buffer: Buffer }[] })} req
@@ -14,7 +14,7 @@ const debugUnipacker = debug('emulationOutput-Controller');
  * @param {NextFunction} next
  * @return {*}  {Promise<void>}
  */
-export async function emulationOutput(
+export async function generatePartialYaraRule(
   req: Request & { files: { buffer: Buffer }[] },
   res: Response,
   next: NextFunction
@@ -27,12 +27,23 @@ export async function emulationOutput(
     );
 
     const file = req.files.pop() as { buffer: Buffer };
+    const {
+      is_unpacking_required,
+      minimum_string_length,
+      strings_to_ignore
+    } = req.body;
 
-    const output = await getEmulationOutput(file.buffer);
+    const rule = await generatePartialYaraRuleOperation({
+      file: file.buffer,
+      isUnpackingRequired: !!is_unpacking_required,
+      minimumStringLength: parseInt(minimum_string_length, 10),
+      stringsToIgnore: strings_to_ignore ?? []
+    });
 
     res.json({
-      output
+      rule
     });
+
     next();
   } catch (error: unknown) {
     next(error);
