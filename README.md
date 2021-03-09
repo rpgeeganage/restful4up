@@ -1,13 +1,22 @@
 # RESTful API for [Unipacker](https://github.com/unipacker/unipacker)
 
-## Feature
+### Table of content
++ [Features](#features)
++ [Software Requirements](#software-requirements)
++ [How to use](#how-to-use)
++ [APIs](#apis)
++ [SDKs](#sdks)
+    - [Python](sdk/README.md#python-sdk)   
++ [About the Partial YARA rule](#about-the-partial-yara-rule)
+
+## Features
 - Unpack the given executable using [Unipacker](https://github.com/unipacker/unipacker)
 - Extract the output when Unipacker run the unpacking
 - Generate partial [YARA](https://yara.readthedocs.io/) rule.
 ## Software Requirements
 * Docker
 
-# How to use
+## How to use
 1. Clone this repo
 
 ```sh
@@ -28,8 +37,8 @@ make run
 http://localhost:7887/spec
 ```
 
-# APIs
-## `/v1/unpack`
+## APIs
+### `/v1/unpack`
 
 Upload the file to unpack and get the unpacked file.
 
@@ -44,7 +53,7 @@ Request:
 }
 ```
 
-## `/v1/emulation-output`
+### `/v1/emulation-output`
 
 Upload the file to unpack and get the emulation output of the Unipacker.
 
@@ -59,7 +68,7 @@ Request:
 }
 ```
 
-## `/v1/clean`
+### `/v1/clean`
 
 Cleanup the uploaded executables
 HTTP method: 
@@ -71,7 +80,7 @@ Request:
 none
 ```
 
-## `/generate-partial-yara-rules`
+### `/generate-partial-yara-rules`
 Generates partial YARA rules
 HTTP method: 
 ```
@@ -91,7 +100,7 @@ Request:
 }
 ```
 
-# How to use the SDK
+## SDKs
 ### Python SDK is available in `sdk/restful4up.py`
 ### [Read Me](sdk/)
 ```python
@@ -122,7 +131,7 @@ partialYaraRule = app.generatePartialYaraRule(path, True, 10, ['SING error', '!T
 print(partialYaraRule)
 ```
 
-# About the Partial YARA rule
+## About the Partial YARA rule
 App generates a YARA rule without the `condition` block from given executable.
 
 eg:
