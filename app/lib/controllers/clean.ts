@@ -1,6 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
+import debug from 'debug';
 
 import { cleanWorkspace } from '../files';
+
+const debugUnipacker = debug('clean-controller');
 
 /**
  * Clean request handler
@@ -12,11 +15,13 @@ import { cleanWorkspace } from '../files';
  * @return {*}  {Promise<void>}
  */
 export async function clean(
-  _req: Request,
+  req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> {
   try {
+    debugUnipacker('URL :%s',req.url)
+
     await cleanWorkspace();
 
     res.status(204).send();

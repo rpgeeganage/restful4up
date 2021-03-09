@@ -1,6 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
+import debug from 'debug';
 
 import { getEmulationOutput } from '../files';
+
+const debugUnipacker = debug('emulationOutput-Controller');
 
 /**
  * Extract Emulation output request handler
@@ -17,6 +20,8 @@ export async function emulationOutput(
   next: NextFunction
 ): Promise<void> {
   try {
+    debugUnipacker('request body %j. files count %s', req.body, req.files.length);
+
     const file = req.files.pop() as { buffer: Buffer };
 
     const output = await getEmulationOutput(file.buffer);

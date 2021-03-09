@@ -1,6 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
+import debug from 'debug';
 
 import { getUnpackedFile } from '../files';
+
+const debugUnipacker = debug('unpack-Controller');
 
 /**
  * Run Unipacker request handler
@@ -17,6 +20,8 @@ export async function unpack(
   next: NextFunction
 ): Promise<void> {
   try {
+    debugUnipacker('request body %j. files count %s', req.body, req.files.length);
+
     const file = req.files.pop() as { buffer: Buffer };
 
     const readbleStream = await getUnpackedFile(file.buffer);

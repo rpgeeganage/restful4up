@@ -16,12 +16,45 @@ class restful4up():
 			raise ValueError('Please provide the API HOST')
 
 	def unpack(self, path):
+		"""Run /unpack. To unpack the uploaded the executable
+
+		Args:
+			path (string): path to the executable
+
+		Raises:
+			ValueError: HTTPError
+			ValueError: Timeout
+			ValueError: RequestException
+
+		Returns:
+			string: Binary string of the unpacked file
+		"""
 		return self.uploadAndGetOutput(path, 'unpack')
 
 	def emulationOutput(self, path):
+		"""Run /emulation-output. To get the output of Unipacker during the unpack process
+
+		Args:
+			path (string): path to the executable
+
+		Raises:
+			ValueError: HTTPError
+			ValueError: Timeout
+			ValueError: RequestException
+
+		Returns:
+			string[]: Output from the Unipacker during the unpacking process
+		"""
 		return self.uploadAndGetOutput(path, 'emulation-output')
 
 	def clean(self):
+		"""Run /clean. To cleanup the uploaded executables.
+
+		Raises:
+			ValueError: HTTPError
+			ValueError: Timeout
+			ValueError: RequestException
+		"""
 		try:
 			response = requests.head(f'{self.API_HOST}/clean')
 			response.raise_for_status()
@@ -33,6 +66,31 @@ class restful4up():
 			raise ValueError(err)
 
 	def generatePartialYaraRule(self, path, is_unpacking_required=False, minimum_string_length=4, strings_to_ignore=[]):
+		"""Run /generate-partial-yara-rules. To generate partial YARA rule.
+
+		Args:
+			path (string): path to the executable
+			is_unpacking_required (bool, optional): Defaults to False.
+			minimum_string_length (int, optional): Defaults to 4.
+			strings_to_ignore (list, optional): Defaults to [].
+
+		Raises:
+			ValueError: HTTPError
+			ValueError: Timeout
+			ValueError: RequestException
+
+		Returns:
+		{
+			name: string,
+  			meta: { 
+				date: string
+				md5sum: string
+				sha256sum: string
+				sha512sum: string
+			},
+  			strings: [string, string][]
+		}
+		"""
 		files = self.readFile(path)
 		data = {}
 
@@ -65,12 +123,25 @@ class restful4up():
 
 		return response.content
 
-	def uploadAndGetOutput(self, endpoint, files = {}, data = {}):
+	def uploadAndGetOutput(self, path, endpoint):
+		"""Upload the gets the output from the given endpoints
+
+		Args:
+			path (string): path to the executable
+			endpoint (string): API endpoint
+
+		Raises:
+			ValueError: HTTPError
+			ValueError: Timeout
+			ValueError: RequestException
+		"""
+		files = self.readFile(path)
+
 		response = None
-		logging.info('Uploading %s to API', endpoint)
+		logging.info('Uploading %s to API', path)
 
 		try:
-			response = requests.post(f'{self.API_HOST}/{endpoint}', data=data, files=files)
+			response = requests.post(f'{self.API_HOST}/{endpoint}', files=files)
 			response.raise_for_status()
 		except requests.exceptions.HTTPError as err:
 			jsonError = json.loads(err.response.text)
@@ -83,6 +154,14 @@ class restful4up():
 		return response.content
 
 	def readFile(self, path):
+		"""Read the file from given path
+
+		Args:
+			path (string): [description]
+
+		Raises:
+			path (string): path to the executable
+		"""
 		if isdir(path):
 			raise ValueError('The path specified appears to be a directory and not a file.')
 		elif not isfile(path):

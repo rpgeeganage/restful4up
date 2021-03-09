@@ -1,6 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
+import debug from 'debug';
 
 import { generatePartialYaraRule as generatePartialYaraRuleOperation } from '../files';
+
+const debugUnipacker = debug('emulationOutput-Controller');
 
 /**
  * Generate Yara partial Yara rules for given executable request handler
@@ -17,6 +20,8 @@ export async function generatePartialYaraRule(
   next: NextFunction
 ): Promise<void> {
   try {
+    debugUnipacker('request body %j. files count %s', req.body, req.files.length);
+
     const file = req.files.pop() as { buffer: Buffer };
     const {
       is_unpacking_required,
