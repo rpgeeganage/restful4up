@@ -19,7 +19,6 @@ export async function getApp(
   app.use(cors());
 
   app.use(bodyParser.json());
-  app.use(bodyParser.text());
   app.use(bodyParser.urlencoded({ extended: false }));
 
   app.use('/spec', express.static(specFilePath));
