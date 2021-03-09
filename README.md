@@ -79,7 +79,7 @@ POST
 ```
 Request:
 
-```json
+```javascript
 {
    "is_unpacking_required":"true", // flag to indicate unpacking required or not
    "minimum_string_length":"10", // Minimum length of the strings to extract
