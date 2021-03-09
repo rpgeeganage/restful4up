@@ -164,14 +164,26 @@ components:
           type: string
           description: Yara rule name
         meta:
-          type: array
+          type: object
           description: Yara rule meta data section 
-          items:
-            type: array 
-            items:
-                type: string
-            minItems: 2
-            maxItems: 2
+          required:
+          - date
+          - md5sum
+          - sha256sum
+          - sha512sum
+          properties:
+            date:
+              type: string
+              description: Date of the YARA rule created
+            md5sum:
+              type: string
+              description: MD5 check sum
+            sha256sum:
+              type: string
+              description: SHA 256 check sum
+            sha512sum:
+              type: string
+              description: SHA 512 check sum
         strings:
           type: array
           description: Yara rule string section 

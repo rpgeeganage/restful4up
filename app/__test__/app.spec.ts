@@ -72,11 +72,13 @@ describe('Restfull4Up', () => {
       expect(yaraRule.name.trim().length).not.toEqual(0);
 
       const metaAttributes = ['date', 'md5sum', 'sha256sum', 'sha512sum'];
-      expect(yaraRule.meta).toBeInstanceOf(Array);
-      expect(yaraRule.meta).not.toEqual([]);
-      yaraRule.meta.forEach((meta) => {
-        expect(metaAttributes).toEqual(expect.arrayContaining([meta[0]]));
+      metaAttributes.forEach((metaAttribute) => {
+        expect(yaraRule.meta).toHaveProperty(metaAttribute);
+        expect(
+          (yaraRule.meta as { [key: string]: string })[metaAttribute].length
+        ).not.toEqual(0);
       });
+
       expect(yaraRule.strings).toBeInstanceOf(Array);
       expect(yaraRule.strings).not.toEqual([]);
     }

@@ -64,7 +64,10 @@ export async function getApp(
       debugApp('Error %o', err);
 
       res.status(err.status).json({
-        status: err.status,
+        status:
+          err instanceof openApiValidator.error.InternalServerError
+            ? 400
+            : err.status,
         message: err.message
       });
 

@@ -6,7 +6,7 @@ export interface IHashes {
 
 export interface IYaraRule {
   name: string;
-  meta: [string, string][];
+  meta: { [key: string]: string };
   strings: [string, string][];
 }
 
@@ -26,10 +26,12 @@ export function generateRule(
   hashes: IHashes,
   extractedString: [string, string][]
 ): IYaraRule {
-  const hashString: [string, string][] = Object.keys(hashes).map((h) => [
-    h,
-    (hashes as IHashes & { [key: string]: string })[h]
-  ]);
+  const meta = {
+    date: new Date().toString(),
+    md5sum: hashes.md5sum,
+    sha256sum: hashes.sha256sum,
+    sha512sum: hashes.sha512sum
+  };
 
   const strings: [string, string][] = extractedString
     .filter(
@@ -46,7 +48,7 @@ export function generateRule(
 
   return {
     name: `rule_for_${name}`,
-    meta: [['date', new Date().toString()], ...hashString],
+    meta,
     strings
   };
 }
