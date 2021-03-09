@@ -20,7 +20,7 @@ export async function clean(
   next: NextFunction
 ): Promise<void> {
   try {
-    debugUnipacker('URL :%s',req.url)
+    debugUnipacker('URL :%s', req.url);
 
     await cleanWorkspace();
 

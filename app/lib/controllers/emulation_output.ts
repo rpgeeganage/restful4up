@@ -20,7 +20,11 @@ export async function emulationOutput(
   next: NextFunction
 ): Promise<void> {
   try {
-    debugUnipacker('request body %j. files count %s', req.body, req.files.length);
+    debugUnipacker(
+      'request body %j. files count %s',
+      req.body,
+      req.files.length
+    );
 
     const file = req.files.pop() as { buffer: Buffer };
 
