@@ -129,7 +129,6 @@ paths:
                     type: string
                   minItems: 0
                   maxItems: 1000
-
       responses:
         200:
           description: Yara rules
@@ -151,7 +150,54 @@ paths:
             '*/*':
               schema:
                 $ref: '#/components/schemas/error'
-
+  /apply-yara-rules:
+    post:
+      description: apply given YARA rules to the given executable. (upto 10 rules)
+      operationId: applyYaraRules
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              required:
+              - file
+              - rules
+              properties:
+                file:
+                  type: string
+                  description: file
+                  format: binary
+                is_unpacking_required:
+                  type: string
+                  enum: ['true', 'false']
+                rules:
+                  type: array 
+                  items:
+                    type: string
+                    description: Rule as BASE-64 encoded string
+                  minItems: 1
+                  maxItems: 10
+      responses:
+        200:
+          description: Yara rules
+          content:
+            '*/*':
+              schema:
+                properties:
+                  result:
+                    $ref: '#/components/schemas/apply_yara_rule'
+        400:
+          description: request error
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/error'
+        500:
+          description: server error
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/error'
 components:
   schemas:
     yara:
@@ -193,6 +239,36 @@ components:
                 type: string
             minItems: 2
             maxItems: 2
+
+    apply_yara_rule:
+      required:
+      - yara_command
+      - is_success
+      properties:
+        emulation_output:
+          type: array
+          description: Output from Unipacker emulation, if it was unpacked
+          items:
+            type: array 
+            items:
+                type: string
+        yara_rule_results:
+          type: array
+          description: results after applying the YARA rules
+          items:
+            type: array 
+            items:
+                type: string
+        yara_command:
+          type: string
+          description: Yara command executed
+        is_success:
+          type: boolean
+          description: is operation success
+        error_message:
+          type: boolean
+          description: error message, if YARA failed
+
     error:
       required:
       - status

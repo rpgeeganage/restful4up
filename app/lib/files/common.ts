@@ -21,9 +21,14 @@ export interface ISavedFile {
  * Create workspace and returns it
  *
  * @export
+ * @param {string} [additionalFolder]
  * @return {*}  {string}
  */
-export function getWorkSpace(): string {
+export function getWorkSpace(additionalFolder?: string): string {
+  if (additionalFolder) {
+    return path.join(os.tmpdir(), 'restful4up', additionalFolder);
+  }
+
   return path.join(os.tmpdir(), 'restful4up');
 }
 
@@ -32,10 +37,14 @@ export function getWorkSpace(): string {
  *
  * @export
  * @param {Buffer} incommingFile
+ * @param {string} [workSpaceCustome]
  * @return {*}  {Promise<ISavedFile>}
  */
-export function saveIncommingFile(incommingFile: Buffer): Promise<ISavedFile> {
-  const workSpace = getWorkSpace();
+export function saveIncommingFile(
+  incommingFile: Buffer,
+  workSpaceCustome?: string
+): Promise<ISavedFile> {
+  const workSpace = workSpaceCustome ?? getWorkSpace();
 
   return new Promise((resolve, reject) => {
     if (!fs.existsSync(workSpace)) {
@@ -142,7 +151,7 @@ export async function calculateSingleHash(
  * @param {string} command
  * @return {*}  {Promise<string>}
  */
-function executeShellCommand(command: string): Promise<string> {
+export function executeShellCommand(command: string): Promise<string> {
   return new Promise((resolve, reject) => {
     debugCommon('executeShellCommand: [%s]', command);
 
