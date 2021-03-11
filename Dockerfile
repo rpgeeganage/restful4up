@@ -39,6 +39,14 @@ RUN pip3 install --upgrade unipacker
 # PEV tools
 RUN apt-get -y install pev
 
+# YARA
+RUN apt-get -y install yara 
+RUN apt-get -y install yara-doc
+
+# Testing YARA
+RUN echo rule dummy { condition: true } > my_first_rule
+RUN yara my_first_rule my_first_rule
+
 # Set environment variables
 ENV PATH="$HOME/.local/bin:$HOME/${APP_FOLDER_PATH_EXEC}:$PATH"
 ENV HTTP_PORT=$HTTP_PORT

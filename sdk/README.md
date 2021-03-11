@@ -87,7 +87,7 @@ app.clean()
 ```python
 path = '/home/user/projects/unipacker/Sample/UPX/Lab18-01.exe'
 
-app.generatePartialYaraRule(
+partialYaraRule = app.generatePartialYaraRule(
     path, 
     True,
     10, 
@@ -95,4 +95,48 @@ app.generatePartialYaraRule(
 )
 
 print(partialYaraRule)
+```
+<br/>
+
+* ## `applyYaraRules(path, rules, [is_unpacking_required])`
+### To generate a partial YARA rule
+<br/>
+
+| Parameter   | Requirement| Description    |default value|
+|---|---|---|---|
+| `path`   | **required** | Path to the executable file  |-|
+| `rules`   | **required** | Array of **Base64 encoded** strings generated from YARA rules  |-|
+| `is_unpacking_required` | **_optional_**| flag to indicate unpacking is required for the give executable| `False`
+
+<br/>
+
+### Example: 
+
+```python
+import os
+import base64
+
+from restful4up import restful4up
+
+app = restful4up('http://localhost:7887')
+
+path = '/home/user/projects/unipacker/Sample/UPX/Lab18-01.exe'
+rules_folder = '/home/user/projects/restful4up/app/__test__/fixtures/yara_rules'
+
+# Base64 encoded rules
+rules = []
+
+# Building the Base64 encoded rules
+for root, directories, files in os.walk(rules_folder, topdown=False):
+    for name in files:
+        data = open(os.path.join(root, name), 'rb').read()
+        print(data)
+        encoded = base64.b64encode(data)
+        
+        rules.append(encoded)
+
+# Call the API
+yaraRuleResult = app.applyYaraRules(path, rules, True)
+
+print(yaraRuleResult)
 ```

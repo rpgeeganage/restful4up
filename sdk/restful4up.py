@@ -123,6 +123,59 @@ class restful4up():
 
 		return response.content
 
+	def applyYaraRules(self, path, rules, is_unpacking_required=False):
+		"""Run /apply-yara-rules. To apply given YARA rules to the executable.
+
+		Args:
+			path (string): path to the executable
+			is_unpacking_required (bool, optional): Defaults to False.
+			rules (list, optional): Defaults to [].
+
+		Raises:
+			ValueError: HTTPError
+			ValueError: Timeout
+			ValueError: RequestException
+
+		Returns:
+		{
+  			output: { 
+				is_success: boolean
+				matched_yara_rules: {
+					rule: string
+					string_information: string[]
+				}[]
+				yara_command: string
+				error_message: (string, optional)
+			}
+		}
+		"""
+		files = self.readFile(path)
+		data = {}
+
+		if is_unpacking_required:
+			data['is_unpacking_required'] = 'true'
+			logging.debug('is_unpacking_required: %s', data['is_unpacking_required'])
+
+		if rules:
+			data['rules'] = rules
+			logging.debug('rules: %s', data['rules'])
+
+		else:
+			raise ValueError('rules are required')
+
+		try:
+			response = requests.post(f'{self.API_HOST}/apply-yara-rules', data=data, files=files)
+			response.raise_for_status()
+		except requests.exceptions.HTTPError as err:
+			jsonError = json.loads(err.response.text)
+			raise ValueError(jsonError['message'])
+		except requests.exceptions.Timeout:
+			raise ValueError('timed out')
+		except requests.exceptions.RequestException as err:
+			raise ValueError(err)
+
+		return response.content
+
 	def uploadAndGetOutput(self, path, endpoint):
 		"""Upload the gets the output from the given endpoints
 

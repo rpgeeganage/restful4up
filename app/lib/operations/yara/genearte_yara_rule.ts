@@ -1,17 +1,15 @@
-import { Readable } from 'stream';
-
 import debug from 'debug';
 
-import { ProcessError } from '../errors';
+import { ProcessError } from '../../errors';
 
 import {
+  calculateHashes,
   saveIncommingFile,
-  runStringExtraction,
-  ISavedFile,
-  calculateSingleHash
-} from './common';
-import { getUnpackedFile } from './unpack';
-import { IYaraRule, IHashes, generateRule } from './yara_rules';
+  runStringExtraction
+} from '../common';
+
+import { getInputBuffer } from './common';
+import { IYaraRule, generateRule } from './yara_rules';
 
 const debugYara = debug('yara');
 
@@ -75,67 +73,4 @@ export async function generatePartialYaraRule(
   } catch (error) {
     throw new ProcessError(error.message);
   }
-}
-
-/**
- * Unpack and convert stream to buffer if required
- *
- * @param {Buffer} inputBuffer
- * @param {boolean} [isUpackingRequired]
- * @return {*}  {Promise<Buffer>}
- */
-async function getInputBuffer(
-  inputBuffer: Buffer,
-  isUpackingRequired?: boolean
-): Promise<Buffer> {
-  if (isUpackingRequired) {
-    const readbleStream = await getUnpackedFile(inputBuffer);
-
-    return getBufferFromStream(readbleStream);
-  }
-
-  return inputBuffer;
-}
-
-/**
- * Convert stream to buffer
- *
- * @param {Readable} inputStream
- * @return {*}  {Promise<Buffer>}
- */
-async function getBufferFromStream(inputStream: Readable): Promise<Buffer> {
-  debugYara('getBufferFromStream: converting a stream to buffer');
-
-  const bufferChuncks: Buffer[] = [];
-
-  for await (const s of inputStream) {
-    bufferChuncks.push(s);
-  }
-
-  debugYara(
-    'getBufferFromStream: created buffer chunks %s',
-    bufferChuncks.length
-  );
-
-  return Buffer.concat(bufferChuncks);
-}
-
-/**
- * Get hashes
- *
- * @param {ISavedFile} savedFile
- * @return {*}  {Promise<IHashes>}
- */
-async function calculateHashes(savedFile: ISavedFile): Promise<IHashes> {
-  const [md5sum, sha256sum, sha512sum] = await Promise.all(
-    ['md5sum', 'sha256sum', 'sha512sum'].map((h) =>
-      calculateSingleHash(h, savedFile)
-    )
-  );
-
-  return {
-    md5sum,
-    sha256sum,
-    sha512sum
-  };
 }

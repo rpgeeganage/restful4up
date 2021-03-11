@@ -2,9 +2,9 @@ import * as fs from 'fs';
 
 import debug from 'debug';
 
-import { ProcessError } from '../errors';
+import { ProcessError } from '../../errors';
 
-import { getWorkSpace } from './common';
+import { getWorkSpace } from '../common';
 
 const debugUnipacker = debug('clean');
 

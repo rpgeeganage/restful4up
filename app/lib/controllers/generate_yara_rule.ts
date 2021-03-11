@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import debug from 'debug';
 
-import { generatePartialYaraRule as generatePartialYaraRuleOperation } from '../files';
+import { generatePartialYaraRule as generatePartialYaraRuleOperation } from '../operations';
 
 const debugUnipacker = debug('emulationOutput-Controller');
 

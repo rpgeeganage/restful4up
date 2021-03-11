@@ -4,9 +4,9 @@ import * as fs from 'fs';
 
 import debug from 'debug';
 
-import { ProcessError } from '../errors';
+import { ProcessError } from '../../errors';
 
-import { saveIncommingFile, runUnipacker, ISavedFile } from './common';
+import { saveIncommingFile, runUnipacker, ISavedFile } from '../common';
 
 const debugUnipacker = debug('unipacker-unpack');
 

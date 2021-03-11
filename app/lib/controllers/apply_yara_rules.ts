@@ -1,12 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
 import debug from 'debug';
 
-import { getUnpackedFile } from '../operations';
+import { applyYaraRules as applyYaraRulesOperation } from '../operations';
 
-const debugUnipacker = debug('unpack-Controller');
+const debugUnipacker = debug('applyYaraRules-Controller');
 
 /**
- * Run Unipacker request handler
+ * Apply YARA rules output request handler
  *
  * @export
  * @param {(Request & { files: { buffer: Buffer }[] })} req
@@ -14,7 +14,7 @@ const debugUnipacker = debug('unpack-Controller');
  * @param {NextFunction} next
  * @return {*}  {Promise<void>}
  */
-export async function unpack(
+export async function applyYaraRules(
   req: Request & { files: { buffer: Buffer }[] },
   res: Response,
   next: NextFunction
@@ -27,10 +27,18 @@ export async function unpack(
     );
 
     const file = req.files.pop() as { buffer: Buffer };
+    const { is_unpacking_required, rules } = req.body;
 
-    const readbleStream = await getUnpackedFile(file.buffer);
+    const output = await applyYaraRulesOperation({
+      file: file.buffer,
+      isUnpackingRequired: !!is_unpacking_required,
+      rules
+    });
 
-    readbleStream.pipe(res);
+    res.json({
+      output
+    });
+    next();
   } catch (error: unknown) {
     next(error);
   }

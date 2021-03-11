@@ -2,6 +2,7 @@ import * as os from 'os';
 import * as path from 'path';
 import * as fs from 'fs';
 import { exec } from 'child_process';
+import { Readable } from 'stream';
 
 import debug from 'debug';
 
@@ -16,14 +17,30 @@ export interface ISavedFile {
   file: string;
   folder: string;
 }
+/**
+ * Generated Hashes
+ *
+ * @export
+ * @interface IHashes
+ */
+export interface IHashes {
+  md5sum: string;
+  sha256sum: string;
+  sha512sum: string;
+}
 
 /**
  * Create workspace and returns it
  *
  * @export
+ * @param {string} [additionalFolder]
  * @return {*}  {string}
  */
-export function getWorkSpace(): string {
+export function getWorkSpace(additionalFolder?: string): string {
+  if (additionalFolder) {
+    return path.join(os.tmpdir(), 'restful4up', additionalFolder);
+  }
+
   return path.join(os.tmpdir(), 'restful4up');
 }
 
@@ -32,10 +49,14 @@ export function getWorkSpace(): string {
  *
  * @export
  * @param {Buffer} incommingFile
+ * @param {string} [workSpaceCustome]
  * @return {*}  {Promise<ISavedFile>}
  */
-export function saveIncommingFile(incommingFile: Buffer): Promise<ISavedFile> {
-  const workSpace = getWorkSpace();
+export function saveIncommingFile(
+  incommingFile: Buffer,
+  workSpaceCustome?: string
+): Promise<ISavedFile> {
+  const workSpace = workSpaceCustome ?? getWorkSpace();
 
   return new Promise((resolve, reject) => {
     if (!fs.existsSync(workSpace)) {
@@ -142,7 +163,7 @@ export async function calculateSingleHash(
  * @param {string} command
  * @return {*}  {Promise<string>}
  */
-function executeShellCommand(command: string): Promise<string> {
+export function executeShellCommand(command: string): Promise<string> {
   return new Promise((resolve, reject) => {
     debugCommon('executeShellCommand: [%s]', command);
 
@@ -164,4 +185,49 @@ function executeShellCommand(command: string): Promise<string> {
       return resolve(stdOut);
     });
   });
+}
+
+/**
+ * Convert stream to buffer
+ *
+ * @param {Readable} inputStream
+ * @return {*}  {Promise<Buffer>}
+ */
+export async function getBufferFromStream(
+  inputStream: Readable
+): Promise<Buffer> {
+  debugCommon('getBufferFromStream: converting a stream to buffer');
+
+  const bufferChuncks: Buffer[] = [];
+
+  for await (const s of inputStream) {
+    bufferChuncks.push(s);
+  }
+
+  debugCommon(
+    'getBufferFromStream: created buffer chunks %s',
+    bufferChuncks.length
+  );
+
+  return Buffer.concat(bufferChuncks);
+}
+
+/**
+ * Get hashes
+ *
+ * @param {ISavedFile} savedFile
+ * @return {*}  {Promise<IHashes>}
+ */
+export async function calculateHashes(savedFile: ISavedFile): Promise<IHashes> {
+  const [md5sum, sha256sum, sha512sum] = await Promise.all(
+    ['md5sum', 'sha256sum', 'sha512sum'].map((h) =>
+      calculateSingleHash(h, savedFile)
+    )
+  );
+
+  return {
+    md5sum,
+    sha256sum,
+    sha512sum
+  };
 }

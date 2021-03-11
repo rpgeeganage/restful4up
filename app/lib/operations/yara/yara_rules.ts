@@ -1,9 +1,11 @@
-export interface IHashes {
-  md5sum: string;
-  sha256sum: string;
-  sha512sum: string;
-}
+import { IHashes } from '../common';
 
+/**
+ * YARA Rule interface
+ *
+ * @export
+ * @interface IYaraRule
+ */
 export interface IYaraRule {
   name: string;
   meta: { [key: string]: string };

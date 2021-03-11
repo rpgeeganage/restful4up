@@ -112,3 +112,6 @@ temp_data_store
 .bash_history
 
 .unipacker_brokenimport.exe
+
+__pycache__
+temp.py
