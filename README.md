@@ -99,7 +99,29 @@ Request:
    "file": <Binary string> // File content
 }
 ```
+Reponse: [About the Partial YARA rule](#about-the-partial-yara-rule)
+<br/>
+<br/>
+### `/apply-yara-rules`
+Apply YARA rules to give executable
+HTTP method: 
+```
+POST
+```
+Request:
 
+```javascript
+{
+   "is_unpacking_required":"true", // flag to indicate unpacking required or not
+   "rules": [
+      "<BASE64 encoded string>"
+   ], // Base 64 encoded string of YARA files
+   "file": <Binary string> // File content
+}
+```
+Reponse: [Results after applying the given YARA rule](#results-after-applying-the-given-yara-rule)
+<br/>
+<br/>
 ## SDKs
 ### Python SDK is available in `sdk/restful4up.py`
 ### [Read Me](sdk/)
@@ -223,6 +245,32 @@ eg:
                 "hijklmnopqrstuvwxyz0123456789+/"
             ]
         ]
+    }
+}
+```
+
+## Results after applying the given YARA rule
+
+```json
+{
+    "output": {
+    "matched_yara_rules": [
+        {
+            "rule": "test_rule_1",
+            "string_information": [
+                "0x4e:39:$my_text_string: This program cannot be run in DOS mode."
+            ]
+        },
+        {
+            "rule": "test_rule_3",
+            "string_information": [
+                "0x50e1:31:$my_text_string: hijklmnopqrstuvwxyz0123456789+/",
+                "0x9724:31:$my_text_string: hijklmnopqrstuvwxyz0123456789+/"
+            ]
+        }
+    ],
+    "yara_command": "yara --print-strings --print-string-length --fail-on-warnings /tmp/restful4up/1615496936444_yara_workspace/rules/c35143ae5515181b3b2b892cc9c2c5590029dd3668095bcf /tmp/restful4up/1615496936444_yara_workspace/rules/7e8070e40a5c06991f80e98aa648038ab2aa332e32069211 /tmp/restful4up/1615496936444_yara_workspace/rules/f9971bd6ee57c4b3dc1dbde4b0e6ca420c9bcfa7a103ef5d /tmp/restful4up/1615496936444_yara_workspace/app_yoAVQ3/1615496937530.invactive",
+    "is_success": true
     }
 }
 ```

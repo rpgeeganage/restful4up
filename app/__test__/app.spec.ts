@@ -187,6 +187,7 @@ describe('Restfull4Up', () => {
         .expect('Content-Type', /json/)
         .expect(200)
         .then((response) => {
+          console.log(JSON.stringify(response.body, null, ' '))
           const { output } = response.body;
 
           expect(output).toHaveProperty('matched_yara_rules');

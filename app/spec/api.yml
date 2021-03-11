@@ -273,7 +273,7 @@ components:
           type: boolean
           description: is operation success
         error_message:
-          type: boolean
+          type: string
           description: error message, if YARA failed
 
     error:
