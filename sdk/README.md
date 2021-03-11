@@ -124,7 +124,6 @@ path = '/home/user/projects/unipacker/Sample/UPX/Lab18-01.exe'
 rules_folder = '/home/user/projects/restful4up/app/__test__/fixtures/yara_rules'
 
 # Base64 encoded rules
-
 rules = []
 
 # Building the Base64 encoded rules
