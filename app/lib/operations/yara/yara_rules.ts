@@ -1,5 +1,11 @@
 import { IHashes } from '../common';
 
+/**
+ * YARA Rule interface
+ *
+ * @export
+ * @interface IYaraRule
+ */
 export interface IYaraRule {
   name: string;
   meta: { [key: string]: string };

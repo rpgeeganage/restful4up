@@ -6,7 +6,7 @@ import * as supertest from 'supertest';
 
 import { getPackedExec, getUnPackedExec, getYaraRules } from './fixtures';
 
-import { app, file } from '../lib';
+import { app, operations } from '../lib';
 
 describe('Restfull4Up', () => {
   let server: Server;
@@ -68,7 +68,7 @@ describe('Restfull4Up', () => {
   });
 
   describe('Generate Partial YARA rule', () => {
-    function assertBasicRule(yaraRule: file.IYaraRule) {
+    function assertBasicRule(yaraRule: operations.IYaraRule) {
       expect(yaraRule.name.trim().length).not.toEqual(0);
 
       const metaAttributes = ['date', 'md5sum', 'sha256sum', 'sha512sum'];
@@ -117,9 +117,11 @@ describe('Restfull4Up', () => {
         .expect(200)
         .then((response) => {
           assertBasicRule(response.body.rule);
-          (response.body.rule as file.IYaraRule).strings.forEach((element) => {
-            expect(element[1]).not.toEqual(stringToIgnore);
-          });
+          (response.body.rule as operations.IYaraRule).strings.forEach(
+            (element) => {
+              expect(element[1]).not.toEqual(stringToIgnore);
+            }
+          );
         });
     });
 
@@ -136,11 +138,13 @@ describe('Restfull4Up', () => {
         .expect(200)
         .then((response) => {
           assertBasicRule(response.body.rule);
-          (response.body.rule as file.IYaraRule).strings.forEach((element) => {
-            expect(element[1].length).toBeGreaterThanOrEqual(
-              miniumStringLength
-            );
-          });
+          (response.body.rule as operations.IYaraRule).strings.forEach(
+            (element) => {
+              expect(element[1].length).toBeGreaterThanOrEqual(
+                miniumStringLength
+              );
+            }
+          );
         });
     });
 
@@ -159,17 +163,19 @@ describe('Restfull4Up', () => {
         .expect(200)
         .then((response) => {
           assertBasicRule(response.body.rule);
-          (response.body.rule as file.IYaraRule).strings.forEach((element) => {
-            expect(element[1].length).toBeGreaterThanOrEqual(
-              miniumStringLength
-            );
-            expect(element[1]).not.toEqual(stringToIgnore);
-          });
+          (response.body.rule as operations.IYaraRule).strings.forEach(
+            (element) => {
+              expect(element[1].length).toBeGreaterThanOrEqual(
+                miniumStringLength
+              );
+              expect(element[1]).not.toEqual(stringToIgnore);
+            }
+          );
         });
     });
   });
 
-  describe.only('Apply YARA rule', () => {
+  describe('Apply YARA rule', () => {
     it('Should return proper resutls', () => {
       return request
         .post('/v1/apply-yara-rules')
@@ -181,7 +187,29 @@ describe('Restfull4Up', () => {
         .expect('Content-Type', /json/)
         .expect(200)
         .then((response) => {
-          console.log(response.body);
+          const { output } = response.body;
+
+          expect(output).toHaveProperty('matched_yara_rules');
+          expect(output.matched_yara_rules).toBeInstanceOf(Array);
+          expect(output.matched_yara_rules).not.toEqual([]);
+
+          output.matched_yara_rules.forEach(
+            (myr: operations.ISingleYARARule) => {
+              expect(myr).toHaveProperty('rule');
+              expect(myr.rule).not.toEqual(undefined);
+              expect(myr.rule.length).toBeGreaterThanOrEqual(1);
+              expect(myr).toHaveProperty('string_information');
+              expect(myr.string_information).toBeInstanceOf(Array);
+              expect(myr.string_information).not.toEqual([]);
+            }
+          );
+
+          expect(output).toHaveProperty('yara_command');
+          expect(output.yara_command).not.toEqual(undefined);
+          expect(output.yara_command.length).toBeGreaterThanOrEqual(1);
+
+          expect(output).toHaveProperty('is_success');
+          expect(output.is_success).toEqual(true);
         });
     });
   });

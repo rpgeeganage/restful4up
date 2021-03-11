@@ -245,20 +245,27 @@ components:
       - yara_command
       - is_success
       properties:
-        emulation_output:
+        matched_yara_rules:
           type: array
-          description: Output from Unipacker emulation, if it was unpacked
+          description: matched YARA rules
           items:
             type: array 
             items:
-                type: string
-        yara_rule_results:
-          type: array
-          description: results after applying the YARA rules
-          items:
-            type: array 
-            items:
-                type: string
+              type: object
+              description: Yara rule meta data section 
+              required:
+              - rule
+              - string_information
+              properties:
+                rule:
+                  type: string
+                  description: matched rule
+                string_information:
+                  type: array 
+                  items:
+                    type: string
+                  description: string which matched during the scanning
+
         yara_command:
           type: string
           description: Yara command executed
