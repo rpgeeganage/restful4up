@@ -128,6 +128,8 @@ Reponse: [Results after applying the given YARA rule](#results-after-applying-th
 ### [Read Me](sdk/)
 ```python
 #!/usr/bin/python3
+import os
+import base64
 
 from restful4up import restful4up
 
@@ -152,6 +154,26 @@ app.clean()
 # Partial YARA rule generator
 partialYaraRule = app.generatePartialYaraRule(path, True, 10, ['SING error', '!This program cannot be run in DOS mode.'])
 print(partialYaraRule)
+
+# Apply YARA rule
+rules_folder = '/home/user/projects/restful4up/app/__test__/fixtures/yara_rules'
+
+# Base64 encoded rules
+rules = []
+
+# Building the Base64 encoded rules
+for root, directories, files in os.walk(rules_folder, topdown=False):
+    for name in files:
+        data = open(os.path.join(root, name), 'rb').read()
+        print(data)
+        encoded = base64.b64encode(data)
+        
+        rules.append(encoded)
+
+# Call the API
+yaraRuleResult = app.applyYaraRules(path, rules, True)
+
+print(yaraRuleResult)
 ```
 
 ## About the Partial YARA rule
