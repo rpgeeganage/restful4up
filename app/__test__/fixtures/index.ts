@@ -12,7 +12,7 @@ export function getUnPackedExec(): Buffer {
 export function getYaraRules(): string[] {
   const yaraRuleFolder = path.join(__dirname, 'yara_rules');
 
-  return fs.readdirSync(yaraRuleFolder).map(file => {
-    return fs.readFileSync(path.join(yaraRuleFolder, file)).toString('base64')
+  return fs.readdirSync(yaraRuleFolder).map((file) => {
+    return fs.readFileSync(path.join(yaraRuleFolder, file)).toString('base64');
   });
 }

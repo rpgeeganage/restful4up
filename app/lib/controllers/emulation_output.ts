@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import debug from 'debug';
 
-import { getEmulationOutput } from '../files';
+import { getEmulationOutput } from '../operations';
 
 const debugUnipacker = debug('emulationOutput-Controller');
 

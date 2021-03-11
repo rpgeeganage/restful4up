@@ -172,13 +172,17 @@ describe('Restfull4Up', () => {
   describe.only('Apply YARA rule', () => {
     it('Should return proper resutls', () => {
       return request
-      .post('/v1/apply-yara-rules')
-      .field({ file: getPackedExec(), is_unpacking_required: 'true', rules:  getYaraRules()})
-      .expect('Content-Type', /json/)
-      .expect(200)
-      .then((response) => {
-        console.log(response.body);
-      });
-    })
+        .post('/v1/apply-yara-rules')
+        .field({
+          file: getPackedExec(),
+          is_unpacking_required: 'true',
+          rules: getYaraRules()
+        })
+        .expect('Content-Type', /json/)
+        .expect(200)
+        .then((response) => {
+          console.log(response.body);
+        });
+    });
   });
 });

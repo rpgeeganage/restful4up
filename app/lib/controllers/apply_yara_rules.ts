@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import debug from 'debug';
 
-import { applyYaraRules as applyYaraRulesOperation } from '../files';
+import { applyYaraRules as applyYaraRulesOperation } from '../operations';
 
 const debugUnipacker = debug('applyYaraRules-Controller');
 
@@ -27,10 +27,7 @@ export async function applyYaraRules(
     );
 
     const file = req.files.pop() as { buffer: Buffer };
-    const {
-      is_unpacking_required,
-      rules
-    } = req.body;
+    const { is_unpacking_required, rules } = req.body;
 
     const output = await applyYaraRulesOperation({
       file: file.buffer,

@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import debug from 'debug';
 
-import { getUnpackedFile } from '../files';
+import { getUnpackedFile } from '../operations';
 
 const debugUnipacker = debug('unpack-Controller');
 

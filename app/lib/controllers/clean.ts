@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import debug from 'debug';
 
-import { cleanWorkspace } from '../files';
+import { cleanWorkspace } from '../operations';
 
 const debugUnipacker = debug('clean-controller');
 
