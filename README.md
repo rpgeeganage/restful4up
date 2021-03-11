@@ -13,6 +13,7 @@
 - Unpack the given executable using [Unipacker](https://github.com/unipacker/unipacker)
 - Extract the output when Unipacker run the unpacking
 - Generate partial [YARA](https://yara.readthedocs.io/) rule.
+- Apply given YARA rules to given executable.
 ## Software Requirements
 * Docker
 
