@@ -120,8 +120,8 @@ from restful4up import restful4up
 
 app = restful4up('http://localhost:7887')
 
-path = '/home/o4isec/projects/unipacker/Sample/UPX/Lab18-01.exe'
-rules_folder = '/home/o4isec/projects/restful4up/app/__test__/fixtures/yara_rules'
+path = '/home/user/projects/unipacker/Sample/UPX/Lab18-01.exe'
+rules_folder = '/home/user/projects/restful4up/app/__test__/fixtures/yara_rules'
 
 # Base64 encoded rules
 
