@@ -165,9 +165,7 @@ rules = []
 for root, directories, files in os.walk(rules_folder, topdown=False):
     for name in files:
         data = open(os.path.join(root, name), 'rb').read()
-        print(data)
         encoded = base64.b64encode(data)
-        
         rules.append(encoded)
 
 # Call the API
